@@ -58,8 +58,11 @@ def calculate_variable_vector(point: Point, heading: float, poly: Polygon) -> np
     """
 
     distance = border_dist(point, heading, poly)
-    if distance is None or distance > THRESHOLD:
-        return np.array([0, 0]) # No need to adjust the movement vector
+    if distance is None or distance > 3:
+        # If the distance is too large or undefined, use a random angle as the variable vector
+        random_angle = radians(np.random.uniform(-0.1, 0.1))
+        variable = np.array([np.cos(random_angle), np.sin(random_angle)])
+        return variable
  
     # Find the normal vector to the boundary at the intersection point
     intersection = find_intersection(point, heading, poly)
@@ -80,15 +83,13 @@ def calculate_variable_vector(point: Point, heading: float, poly: Polygon) -> np
     if np.dot(normal, centroid - intersection.coords[0]) < 0:
         normal = -normal
  
-    # Calculate the angle between the normal vector and the x-axis
-    angle = np.arctan2(normal[1], normal[0])
+    # Calculate the magnitude of the variable vector using a hyperbolic tangent function
+    # The function has a maximum value of K and approaches zero as the distance increases
+    # The function has a slope of 2K/THRESHOLD at the distance of THRESHOLD/2
+    magnitude = K * np.tanh(2 * (THRESHOLD - distance) / THRESHOLD)
  
-    # Add a random angle between -7 and 7 degrees to the normal angle
-    random_angle = radians(np.random.uniform(-0.1, 0.1))
-    angle += random_angle
- 
-    # Calculate the variable vector as a unit vector with the adjusted angle
-    variable = np.array([np.cos(angle), np.sin(angle)])
+    # Calculate the variable vector as the normal vector scaled by the magnitude
+    variable = magnitude * normal
  
     return variable
 
@@ -102,7 +103,7 @@ object_point = Point(475968, 4934705)
 object_heading = radians(45)
 
 # Assume some initial movement vector for the object (linear and angular velocities)
-movement_vector = np.array([0.5, 0.1]) # [m/s, rad/s]
+movement_vector = np.array([0.5, 0]) # [m/s, rad/s]
 
 # Initialize pygame and create a window for visualization
 pygame.init()
@@ -162,11 +163,10 @@ while running:
     draw_polygon(border_poly , WHITE ,2 )
 
     # Calculate the variable vector based on the position , heading , and polygon 
-    variable_vector = calculate_variable_vector(object_point , object_heading , border_poly)
+    variable_vector = calculate_variable_vector(object_point , object_heading , border_poly )
 
     # Add the variable vector to the movement vector 
     adjusted_vector = movement_vector + variable_vector 
-    movement_vector = adjusted_vector
 
     # Draw the object as a red circle with 10 pixels radius 
     draw_circle(object_point , RED ,10 )
@@ -178,7 +178,7 @@ while running:
     draw_arrow(object_point , object_heading + pi /2 , BLUE ,10 )
 
     # Update the position of the object based on the movement vector and the time step 
-    object_point = Point(np.array(object_point.coords [0 ])+ adjusted_vector [0 ]* DT * np.array([np.cos(object_heading ), np.sin(object_heading )]))
+    object_point=Point(np.array(object_point.coords [0 ])+ adjusted_vector [0 ]* DT * np.array([np.cos(object_heading ), np.sin(object_heading )]))
 
     # Update the heading of the object based on the movement vector and the time step 
     object_heading += adjusted_vector [1 ]* DT 
