@@ -6,7 +6,7 @@ from math import atan, radians, pi, degrees
 import pygame 
 
 
-THRESHOLD = 3 # Distance threshold, meters
+THRESHOLD = 1 # Distance threshold, meters
 K = 0.5 # Gain factor for the variable vector
 DT = 1 # Time step, seconds
 
@@ -86,15 +86,15 @@ def calculate_variable_vector(point: Point, heading: float, poly: Polygon) -> np
     return variable
 
 # Open geojson as UTM zone 10T (lat/ lon in meters)
-gp_frame = geopandas.read_file("./export.json").to_crs('EPSG:32610')
+gp_frame = geopandas.read_file("./export1.json").to_crs('EPSG:32610')
 border_poly = gp_frame[gp_frame['name'] == 'Survey Area']['geometry'][0]
 
 # Assume some initial position and heading for the object inside the polygon
-object_point = Point(475968, 4934705)
+object_point = Point(478113, 4934737)
 object_heading = radians(45)
 
 # Assume some initial movement vector for the object (linear and angular velocities)
-movement_vector = np.array([0.5, 0.1]) # [m/s, rad/s]
+movement_vector = np.array([1.5, 0.25]) # [m/s, rad/s]
 
 # Initialize pygame and create a window for visualization
 pygame.init()
@@ -160,7 +160,7 @@ while running:
     adjusted_vector = movement_vector + variable_vector 
     if variable_vector[0] != 0:
         adjusted_vector = variable_vector
-    movement_vector = adjusted_vector
+    # movement_vector = adjusted_vector
     print("variable vector",variable_vector)
 
     # Draw the object as a red circle with 10 pixels radius 

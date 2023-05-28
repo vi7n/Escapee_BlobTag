@@ -90,7 +90,8 @@ gp_frame = geopandas.read_file("./export.json").to_crs('EPSG:32610')
 border_poly = gp_frame[gp_frame['name'] == 'Survey Area']['geometry'][0]
 
 # Assume some initial position and heading for the object inside the polygon
-object_point = Point(475968, 4934705)
+# object_point = Point(475968, 4934705)
+object_point = Point(478086, 4934737)
 object_heading = radians(45)
 
 # Assume some initial movement vector for the object (linear and angular velocities)
