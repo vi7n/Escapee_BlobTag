@@ -1,6 +1,5 @@
 import rospy
 import math
-
 from geometry_msgs.msg import Twist
 
 # Assume speed and direction are given as input
