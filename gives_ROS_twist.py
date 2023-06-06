@@ -7,7 +7,7 @@ import rospy
 from geometry_msgs.msg import Twist
 
 # Define constants
-THRESHOLD = 3 # Distance threshold in meters
+THRESHOLD = 1.25 # Distance threshold in meters
 K = 0.5 # Change the gain factor for the variable vector
 
 # Define functions same as Nathans'
