@@ -7,6 +7,7 @@ speed = 10 # m/s
 direction = 45 # degrees
 
 # Create a Twist object
+
 twist = Twist()
 
 # Set the linear velocity in x direction
