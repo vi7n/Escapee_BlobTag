@@ -7,7 +7,7 @@ from math import atan, radians, pi, degrees
 import pygame # For visualization
 
 # Define constants
-THRESHOLD = 3 # Distance threshold in meters
+THRESHOLD = 1.5 # Distance threshold in meters
 K = 0.5 # Gain factor for the variable vector
 DT = 1 # Time step in seconds
 
@@ -100,7 +100,7 @@ border_poly = gp_frame[gp_frame['name'] == 'Survey Area']['geometry'][0]
 
 # Assume some initial position and heading for the object inside the polygon
 object_point = Point(475968, 4934705)
-object_heading = radians(45)
+object_heading = radians(145)
 
 # Assume some initial movement vector for the object (linear and angular velocities)
 movement_vector = np.array([0.5, 0]) # [m/s, rad/s]

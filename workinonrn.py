@@ -1,16 +1,17 @@
+# Import modules
 import numpy as np
 import geopandas
 from shapely.geometry import Point, LineString
 from shapely.geometry.polygon import Polygon
 from math import atan, radians, pi, degrees
-import pygame 
+import pygame # For visualization
 
-
-THRESHOLD = 1 # Distance threshold, meters
+# Define constants
+THRESHOLD = 1.5 # Distance threshold in meters
 K = 0.5 # Gain factor for the variable vector
-DT = 1 # Time step, seconds
+DT = 1 # Time step in seconds
 
-
+# Define functions
 def find_intersection(point: Point, heading: float, poly: Polygon) -> Point:
     """
     cast a ray from a point with a given heading and check where it intersects the polygon
@@ -57,8 +58,11 @@ def calculate_variable_vector(point: Point, heading: float, poly: Polygon) -> np
     """
 
     distance = border_dist(point, heading, poly)
-    if distance is None or distance > THRESHOLD:
-        return np.array([0, 0]) # No need to adjust the movement vector
+    if distance is None or distance > 3:
+        # If the distance is too large or undefined, use a random angle as the variable vector
+        random_angle = radians(np.random.uniform(-0.1, 0.1))
+        variable = np.array([np.cos(random_angle), np.sin(random_angle)])
+        return variable
  
     # Find the normal vector to the boundary at the intersection point
     intersection = find_intersection(point, heading, poly)
@@ -79,22 +83,28 @@ def calculate_variable_vector(point: Point, heading: float, poly: Polygon) -> np
     if np.dot(normal, centroid - intersection.coords[0]) < 0:
         normal = -normal
  
-    # Scale the normal vector by a factor that depends on the distance and the gain factor
-    factor = K * (THRESHOLD - distance)
-    variable = factor * normal
+    # Calculate the magnitude of the variable vector using a hyperbolic tangent function
+    # The function has a maximum value of K and approaches zero as the distance increases
+    # The function has a slope of 2K/THRESHOLD at the distance of THRESHOLD/2
+    magnitude = K * np.tanh(2 * (THRESHOLD - distance) / THRESHOLD)
+ 
+    # Calculate the variable vector as the normal vector scaled by the magnitude
+    variable = magnitude * normal
  
     return variable
+
 
 # Open geojson as UTM zone 10T (lat/ lon in meters)
 gp_frame = geopandas.read_file("./export.json").to_crs('EPSG:32610')
 border_poly = gp_frame[gp_frame['name'] == 'Survey Area']['geometry'][0]
+print(type(border_poly))
 
 # Assume some initial position and heading for the object inside the polygon
-object_point = Point(475971, 4934699)
-object_heading = radians(0)
+object_point = Point(475968, 4934705)
+object_heading = radians(145)
 
 # Assume some initial movement vector for the object (linear and angular velocities)
-movement_vector = np.array([1.5, 0.32]) # [m/s, rad/s]
+movement_vector = np.array([0.5, 0]) # [m/s, rad/s]
 
 # Initialize pygame and create a window for visualization
 pygame.init()
@@ -158,10 +168,6 @@ while running:
 
     # Add the variable vector to the movement vector 
     adjusted_vector = movement_vector + variable_vector 
-    if variable_vector[0] != 0:
-        adjusted_vector = variable_vector
-    # movement_vector = adjusted_vector
-    print("variable vector",variable_vector)
 
     # Draw the object as a red circle with 10 pixels radius 
     draw_circle(object_point , RED ,10 )
@@ -173,7 +179,7 @@ while running:
     draw_arrow(object_point , object_heading + pi /2 , BLUE ,10 )
 
     # Update the position of the object based on the movement vector and the time step 
-    object_point = Point(np.array(object_point.coords [0 ])+ adjusted_vector [0 ]* DT * np.array([np.cos(object_heading ), np.sin(object_heading )]))
+    object_point=Point(np.array(object_point.coords [0 ])+ adjusted_vector [0 ]* DT * np.array([np.cos(object_heading ), np.sin(object_heading )]))
 
     # Update the heading of the object based on the movement vector and the time step 
     object_heading += adjusted_vector [1 ]* DT 
