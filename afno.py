@@ -6,17 +6,12 @@ from math import atan, radians, pi, degrees
 import pygame 
 
 
-THRESHOLD = 1 # Distance threshold, meters
+THRESHOLD = 2 # Distance threshold, meters
 K = 0.5 # Gain factor for the variable vector
 DT = 1 # Time step, seconds
 
 
 def find_intersection(point: Point, heading: float, poly: Polygon) -> Point:
-    """
-    cast a ray from a point with a given heading and check where it intersects the polygon
-
-    ** heading should be in radians! convert it with radians(degrees) if needed
-    """
 
     dy = 1000 # this is an arbitrary distance. 1km should be plenty for our application
     dx = atan(heading) * dy
@@ -36,11 +31,6 @@ def find_intersection(point: Point, heading: float, poly: Polygon) -> Point:
 
 
 def border_dist(point: Point, heading: float, poly: Polygon) -> float:
-    """
-    calculate distance from point to edge of polygon on some heading 
-
-    ** heading should be in radians! convert it with radians(degrees) if needed
-    """
 
     intersection = find_intersection(point, heading, poly)
 
@@ -50,11 +40,6 @@ def border_dist(point: Point, heading: float, poly: Polygon) -> float:
     return point.distance(intersection)
 
 def calculate_variable_vector(point: Point, heading: float, poly: Polygon) -> np.array:
-    """
-    calculate the variable vector that adds on to the movement vector to steer away from the boundary
-
-    ** heading should be in radians! convert it with radians(degrees) if needed
-    """
 
     distance = border_dist(point, heading, poly)
     if distance is None or distance > THRESHOLD:

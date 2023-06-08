@@ -1,12 +1,17 @@
 import pyproj
 import pygame
 import numpy as np
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, Point, LineString
+from shapely.geometry import Point, LineString
 
 def convert_to_epsg_32610(lat, lon):
     epsg_32610 = pyproj.Proj('epsg:32610')
     x, y = epsg_32610(lon, lat)
     return x, y
+
+def draw_polygon(poly : Polygon , color : tuple , width : int ):
+    points=[point_to_pixel(Point(p )) for p in poly.exterior.coords ]
+    pygame.draw.polygon(screen , color , points , width )
 
 final_matrix = np.zeros((8, 2))
 
@@ -26,6 +31,7 @@ polygon = Polygon(final_matrix)
 print(polygon)
 
 pygame.init()
+
 
 screen = pygame.display.set_mode((640, 480))
 pygame.display.set_caption("Polygon")
