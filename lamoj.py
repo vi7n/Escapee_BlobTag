@@ -1,7 +1,18 @@
-import utm
+import math
 
-latitude = 44.565278920498805
-longitude = -123.30262330229871
+# angle = int(input())
 
-utm_coords = utm.from_latlon(latitude, longitude)
-print(utm_coords)
+# if angle > 0:
+#     angle = angle % 360 
+#     if angle > 180:
+#         angle = angle % -360
+
+
+# if angle < 0:
+#     angle = angle % -360
+#     if angle < -180:
+#         angle = angle % 360
+
+# print(angle)
+
+print(math.atan2(0.7,0.7))

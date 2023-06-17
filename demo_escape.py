@@ -28,6 +28,10 @@ def gps_callback(data):
 
     # Get robot ID from frame_id field of GPSFix message
     robot_id = data.header.frame_id
+    data.gps_loc
+    #self gps location
+    #group launch
+    
 
     # Get current position from GPSFix message
     lat = data.latitude
@@ -48,7 +52,7 @@ def gps_callback(data):
 rospy.init_node('move_robot')
 pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
 
-rospy.Subscriber('/GPSFix', GPSFix, gps_callback)
+rospy.Subscriber('/info', Escapee, gps_callback)
 
 while not rospy.is_shutdown():
     if current_x is not None and current_y is not None:
