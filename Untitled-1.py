@@ -92,6 +92,7 @@ class EscapeeNode:
        
         threshold = 1
        
+       
         if min_distance < threshold:
             rospy.loginfo("Distance from point to side :::::::::::: %f",min_distance)
            
@@ -103,6 +104,7 @@ class EscapeeNode:
            
             linear_velocity = 0.5
            
+
             twist.linear.x = linear_velocity
             twist.angular.z = angular_velocity
             twist.linear.x = 0.1
