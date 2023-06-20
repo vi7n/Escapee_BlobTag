@@ -89,9 +89,7 @@ class EscapeeNode:
             distances.append(distance)
        
         min_distance = min(distances)
-       
         threshold = 1
-       
        
         if min_distance < threshold:
             rospy.loginfo("Distance from point to side :::::::::::: %f",min_distance)
