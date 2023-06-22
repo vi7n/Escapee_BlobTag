@@ -95,6 +95,7 @@ class EscapeeNode:
             rospy.loginfo("Distance from point to side :::::::::::: %f",min_distance)
            
             twist = Twist()
+            
            
             angle = math.atan2(self.centroid.y - y, self.centroid.x - x)
            
